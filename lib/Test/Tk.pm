@@ -3,7 +3,7 @@ package Test::Tk;
 
 use strict;
 use warnings;
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 use Test::More;
 use Tk;
@@ -122,7 +122,7 @@ Test::Tk - Testing Tk widgets.
 
 =head1 DESCRIPTION
 
-This module aims to assist in the testing of Perl/Tkwidgets.
+This module aims to assist in the testing of Perl/T kwidgets.
 
 B<createapp> creates a MainWindow widget and places it in the variable B<$app>.
 It sets a timer with delay B<$delay> to start the internal test routine.
@@ -143,95 +143,57 @@ when you set your number of tests.
 
 =item B<$app>
 
-=over 4
-
 Holds the reference to the MainWindow object.
 
-=back
-
 =item B<$delay>
-
-=over 4
 
 Default value 100. The delay time between creating the test app and
 start of the testing. You may want to increase this value in case 
 all tests succeed but your test program still throws an error.
 
-=back
-
 =item B<$mwclass>
-
-=over 4
 
 Default value Tk::MainWindow;
 You can set it to a derived class if you like.
 
-=back
-
 =item B<@tests>
-
-=over 4
 
 Each element of I<@tests > should contain a list of three elements.
 
-=head 2 A reference to a sub.
-
 =over 4
+
+=item A reference to a sub.
 
 The sub should return the expected value for the test to succeed.
 
-=back
-
-=head 2 Expected value.
-
-=over 4
+=item Expected value.
 
 This can be a simple scalare but also the reference to a list or a hash. You may even 
 specify a complexer data structure.
 
-=back
-
-=head 2 Description.
-
-=over 4
+=item Description.
 
 A brief description of the test so you know which test passed or failed.
 
 =back
 
-=back
-
 =item B<$show>
-
-=over 4
 
 By default 0. Is set when the B<show> option is given at the command line.
 You can overwrite this by setting or clearing this yourself.
 
-=back
-
 =item B<createapp>I<@options>
-
-=over 4
 
 Creates a MainWindow object and sets the countdown timer for testing.
 You still must call $app->MainWindow yourself.
 
-=back
-
-=item B<hashcompare>I<\%hash1, \%hash2)>
-
-=over 4
+=item B<hashcompare>I<(\%hash1, \%hash2)>
 
 Returns true of both hashes have an identical set of keys and all values are equal.
 If a value is a reference to a list it will call B<listcompare>.
 If a value is a reference to a hash it will call B<hashcompare>.
 
-=back
-
 =item B<listcompare>I<(\@list1, \@list2)>
-
-=over 4
 
 Returns true of both lists have are of equal size and content.
 If a list element is a reference to a list it will call B<listcompare>.
@@ -239,15 +201,9 @@ If a list element is a reference to a hash it will call B<hashcompare>.
 
 =back
 
-=back
-
 =head1 SEE ALSO
 
-=over 4
-
 Test::More
-
-=back
 
 =head1 AUTHOR
 
