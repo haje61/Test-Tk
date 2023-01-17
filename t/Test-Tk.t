@@ -1,18 +1,48 @@
-# Before 'make install' is performed this script should be runnable with
-# 'make test'. After 'make install' it should work as 'perl Test-Tk.t'
-
-#########################
-
-# change 'tests => 1' to 'tests => last_test_to_print';
 
 use strict;
 use warnings;
 
-use Test::More tests => 1;
+use Test::More tests => 8;
 BEGIN { use_ok('Test::Tk') };
 
-#########################
+createapp(
+);
 
-# Insert your test code below, the Test::More module is use()ed here so read
-# its man page ( perldoc Test::More ) for help writing this test script.
+my %hash1 = (
+	key => 'value',
+	number => 7,
+);
 
+#we want both hashes to be identical and
+#in different variables.
+my %hash2 = %hash1;
+
+my @list1 = (qw/one two three/);
+
+#we want lists to be identical and
+#in different variables.
+my @list2 = @list1;
+
+my %chash1 = (%hash1,
+	'list' => [@list1],
+	'hash' => { %hash1 },
+);
+
+my %chash2 = (%hash1,
+	'list' => [@list1],
+	'hash' => { %hash1 },
+);
+
+my @clist1 = (@list1, [@list2], \%hash1);
+my @clist2 = (@list1, [@list2], \%hash1);
+
+
+@tests = (
+	[sub { return 'one' }, 'one', 'Scalar testing'],
+	[sub { return \%hash1 }, \%hash2, 'Hash testing'],
+	[sub { return \@list1 }, \@list2, 'List testing'],
+	[sub { return \%chash1 }, \%chash2, 'Complex hash testing'],
+	[sub { return \@clist1 }, \@clist2, 'Complex list testing'],
+);
+
+$app->MainLoop;

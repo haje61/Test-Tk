@@ -4,3 +4,5 @@ Revision history for Perl extension Test::Tk.
 	- original version; created by h2xs 1.23 with options
 		-X Test::Tk
 
+1.00  Tue Jan 17
+	- Initial release.

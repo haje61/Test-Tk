@@ -1,6 +1,6 @@
 Changes
+lib/Test/Tk.pm
 Makefile.PL
 MANIFEST
-README
+README.md
 t/Test-Tk.t
-lib/Test/Tk.pm

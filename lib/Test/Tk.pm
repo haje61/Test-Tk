@@ -48,14 +48,14 @@ sub dotests {
 		my ($call, $expected, $comment) = @$_;
 		my $result = &$call;
 		if ($expected =~ /^ARRAY/) {
-			ok(ListCompare($expected, $result), $comment)
+			ok(listcompare($expected, $result), $comment)
 		} elsif ($expected =~ /^HASH/) {
-			ok(HashCompare($expected, $result), $comment)
+			ok(hashcompare($expected, $result), $comment)
 		} else {
 			ok(($expected eq $result), $comment)
 		}
 	}
-	$app->after(5, sub { $app->CommandExecute('quit') }) unless $show
+	$app->after(5, sub { $app->destroy }) unless $show
 }
 
 sub hashcompare {
@@ -81,7 +81,6 @@ sub hashcompare {
 
 sub listcompare {
 	my ($l1, $l2) = @_;
-# 	use Data::Dumper; print Dumper $l2;
 	my $size1 = @$l1;
 	my $size2 = @$l2;
 	if ($size1 ne $size2) { return 0 }
@@ -106,7 +105,7 @@ __END__
 
 =head1 NAME
 
-Test::Tk - Testing Perl/Tk widgets
+Test::Tk - Testing Tk widgets.
 
 =head1 SYNOPSIS
 
@@ -123,6 +122,20 @@ Test::Tk - Testing Perl/Tk widgets
 
 =head1 DESCRIPTION
 
+This module aims to assist in the testing of Perl/Tkwidgets.
+
+B<createapp> creates a MainWindow widget and places it in the variable B<$app>.
+It sets a timer with delay B<$delay> to start the internal test routine.
+
+After MainLoop is called and the timer is done, testing is done using the @tests array.
+When testing is done it destroys the MainWindow and continues the test script.
+
+You can set a command line parameter B<show> to test command on the command line.
+eg I<perl -Mblib t/My-Test.t show>. The application will not terminate so you 
+can visually inspect it.
+
+It will perform two tests. You need to account for these 
+when you set your number of tests.
 
 =head1 EXPORT
 
@@ -132,11 +145,17 @@ Test::Tk - Testing Perl/Tk widgets
 
 =over 4
 
+Holds the reference to the MainWindow object.
+
 =back
 
 =item B<$delay>
 
 =over 4
+
+Default value 100. The delay time between creating the test app and
+start of the testing. You may want to increase this value in case 
+all tests succeed but your test program still throws an error.
 
 =back
 
@@ -144,37 +163,79 @@ Test::Tk - Testing Perl/Tk widgets
 
 =over 4
 
-=back
+Default value Tk::MainWindow;
+You can set it to a derived class if you like.
 
+=back
 
 =item B<@tests>
 
 =over 4
 
+Each element of I<@tests > should contain a list of three elements.
+
+=head 2 A reference to a sub.
+
+=over 4
+
+The sub should return the expected value for the test to succeed.
+
 =back
 
+=head 2 Expected value.
+
+=over 4
+
+This can be a simple scalare but also the reference to a list or a hash. You may even 
+specify a complexer data structure.
+
+=back
+
+=head 2 Description.
+
+=over 4
+
+A brief description of the test so you know which test passed or failed.
+
+=back
+
+=back
 
 =item B<$show>
 
 =over 4
 
-=back
-
-=item B<createapp>
-
-=over 4
+By default 0. Is set when the B<show> option is given at the command line.
+You can overwrite this by setting or clearing this yourself.
 
 =back
 
-=item B<hashcompare>
+=item B<createapp>I<@options>
 
 =over 4
+
+Creates a MainWindow object and sets the countdown timer for testing.
+You still must call $app->MainWindow yourself.
 
 =back
 
-=item B<listcompare>
+=item B<hashcompare>I<\%hash1, \%hash2)>
 
 =over 4
+
+Returns true of both hashes have an identical set of keys and all values are equal.
+If a value is a reference to a list it will call B<listcompare>.
+If a value is a reference to a hash it will call B<hashcompare>.
+
+=back
+
+=item B<listcompare>I<(\@list1, \@list2)>
+
+=over 4
+
+Returns true of both lists have are of equal size and content.
+If a list element is a reference to a list it will call B<listcompare>.
+If a list element is a reference to a hash it will call B<hashcompare>.
 
 =back
 
@@ -182,10 +243,23 @@ Test::Tk - Testing Perl/Tk widgets
 
 =head1 SEE ALSO
 
+=over 4
+
+Test::More
+
+=back
 
 =head1 AUTHOR
 
 Hans Jeuken, E<lt>hanje at cpan dot org@E<gt>
+
+=head1 TODO
+
+This should also work for Tcl::pTk widgets. However,
+the testing of this module during install is done with
+Tk. So this is set as a prerequisite.
+A duplicate module with slightly different defaults
+for Tcl::pTk is thinkable.
 
 =head1 COPYRIGHT AND LICENSE
 
@@ -194,6 +268,5 @@ Copyright (C) 2023 by Hans Jeuken
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.34.0 or,
 at your option, any later version of Perl 5 you may have available.
-
 
 =cut

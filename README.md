@@ -1,2 +1,9 @@
 # Test-Tk
-Testing suite for Tk objects
+Test suite for Tk widgets
+
+# Installation
+
+perl Makefile.PL
+make
+make test
+make install
