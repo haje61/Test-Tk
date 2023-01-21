@@ -3,8 +3,9 @@ package Test::Tk;
 
 use strict;
 use warnings;
-our $VERSION = '1.01';
+our $VERSION = '2.00';
 
+use Config;
 use Test::More;
 use Tk;
 
@@ -19,6 +20,7 @@ our @EXPORT = qw(
 	createapp
 	hashcompare
 	listcompare
+	starttesting
 );
 
 our $app;
@@ -31,31 +33,34 @@ my $arg = shift @ARGV;
 $show = 1 if (defined($arg) and ($arg eq 'show'));
 
 sub createapp {
-	eval "use $mwclass";
-	$app = new $mwclass(
-		-width => 200,
-		-height => 125,
-		-title => 'TestSuite',
-		@_
-	);
-	ok(defined $app, "can create");
-	$app->after($delay, \&dotests);
+	if (($Config{'osname'} eq 'MSWin32') or (exists $ENV{'DISPLAY'})) {
+		eval "use $mwclass";
+		$app = new $mwclass(
+			-width => 200,
+			-height => 125,
+			-title => 'TestSuite',
+			@_
+		);
+		ok(defined $app, "app created");
+	}
 }
 
 sub dotests {
-	ok(1, "main loop runs");
-	for (@tests) {
-		my ($call, $expected, $comment) = @$_;
-		my $result = &$call;
-		if ($expected =~ /^ARRAY/) {
-			ok(listcompare($expected, $result), $comment)
-		} elsif ($expected =~ /^HASH/) {
-			ok(hashcompare($expected, $result), $comment)
-		} else {
-			ok(($expected eq $result), $comment)
+	if (defined $app) {
+		ok(1, "main loop runs");
+		for (@tests) {
+			my ($call, $expected, $comment) = @$_;
+			my $result = &$call;
+			if ($expected =~ /^ARRAY/) {
+				ok(listcompare($expected, $result), $comment)
+			} elsif ($expected =~ /^HASH/) {
+				ok(hashcompare($expected, $result), $comment)
+			} else {
+				ok(($expected eq $result), $comment)
+			}
 		}
+		$app->after(5, sub { $app->destroy }) unless $show
 	}
-	$app->after(5, sub { $app->destroy }) unless $show
 }
 
 sub hashcompare {
@@ -100,6 +105,19 @@ sub listcompare {
 	return 1
 }
 
+sub starttesting {
+	if (defined $app) {
+		$app->after($delay, \&dotests);
+		$app->MainLoop;
+	} else {
+		my $size = @tests + 2;
+		SKIP: {
+			skip 'No XServer running for this user', $size;
+		}
+	}
+
+}
+
 1;
 __END__
 
@@ -118,7 +136,7 @@ Test::Tk - Testing Tk widgets.
     [sub { return 1 }, 1, 'A demo test'],
  );
  
- $app->MainLoop;
+ starttesting;
 
 =head1 DESCRIPTION
 
@@ -136,6 +154,8 @@ can visually inspect it.
 
 It will perform two tests. You need to account for these 
 when you set your number of tests.
+
+If you are not on Windows or no XServer is running, all tests will be skipped.
 
 =head1 EXPORT
 
@@ -168,7 +188,7 @@ The sub should return the expected value for the test to succeed.
 
 =item Expected value.
 
-This can be a simple scalare but also the reference to a list or a hash. You may even 
+This can be a simple scalar but also the reference to a list or a hash. You may even 
 specify a complexer data structure.
 
 =item Description.
@@ -182,7 +202,7 @@ A brief description of the test so you know which test passed or failed.
 By default 0. Is set when the B<show> option is given at the command line.
 You can overwrite this by setting or clearing this yourself.
 
-=item B<createapp>I<@options>
+=item B<createapp>I<(@options)>
 
 Creates a MainWindow object and sets the countdown timer for testing.
 You still must call $app->MainWindow yourself.
@@ -203,7 +223,7 @@ If a list element is a reference to a hash it will call B<hashcompare>.
 
 =head1 SEE ALSO
 
-Test::More
+L<Test::More>
 
 =head1 AUTHOR
 
