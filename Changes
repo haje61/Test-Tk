@@ -14,3 +14,5 @@ Revision history for Perl extension Test::Tk.
 	- Corrected some pod typos and errors.
 	- Now skips tests if not on Windows or no XServer running.
 
+2.01  Sun Jan 22
+	- Updated documentation
