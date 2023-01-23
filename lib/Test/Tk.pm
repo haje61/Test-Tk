@@ -3,7 +3,7 @@ package Test::Tk;
 
 use strict;
 use warnings;
-our $VERSION = '2.01';
+our $VERSION = '2.02';
 
 use Config;
 use Test::More;
@@ -128,6 +128,8 @@ Test::Tk - Testing Tk widgets.
 =head1 SYNOPSIS
 
  use Test::More tests => 5;
+ use Test::Tk;
+ 
  BEGIN { use_ok('Tk::MyWidget') };
  
  createapp(
@@ -171,9 +173,9 @@ If you are not on Windows and no XServer is running, all tests will be skipped.
 
 =item B<$app>
 
-Holds the reference to the MainWindow object. If B<createapp> cannot create
-If you are not on Windows and no XServer is running, the MainWindow will not
-be created and B<$app> remains undefined. Do not change this variable.
+Holds the reference to the MainWindow object. If you are not on Windows and no 
+XServer is running, the MainWindow will not be created and B<$app> remains 
+undefined. Do not change this variable.
 
 =item B<$delay>
 
@@ -214,8 +216,8 @@ You can overwrite this by setting or clearing this yourself.
 
 =item B<createapp>I<(@options)>
 
-Creates a MainWindow object and sets the countdown timer for testing.
-You still must call $app->MainWindow yourself.
+Creates the MainWindow object and tests if successfull. 
+Places the object in B>$app>.
 
 =item B<hashcompare>I<(\%hash1, \%hash2)>
 
