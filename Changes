@@ -27,3 +27,6 @@ Revision history for Perl extension Test::Tk.
 3.00  Thu Jun 29 2023
 	- Use Test::Deep for testing data structures
 	- depricated functions listcompare and hashcompare
+
+3.01  Fri Jun 30 2023
+	- Added Test::Deep to prerequisites.
