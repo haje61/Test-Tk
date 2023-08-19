@@ -23,6 +23,7 @@ our @EXPORT = qw(
 	hashcompare
 	listcompare
 	starttesting
+	testaccessors
 );
 
 our $app;
@@ -115,6 +116,22 @@ sub starttesting {
 	}
 }
 
+sub testaccessors {
+	my $obj = shift;
+	for (@_) {
+		my $method = $_;
+		push @tests, [sub {
+			my $default = $obj->$method;
+			$obj->$method('blieb');
+			my $res1 = $obj->$method;
+			$obj->$method('quep');
+			my $res2 = $obj->$method;
+			$obj->$method($default);
+			return (($res1 eq 'blieb') and ($res2 eq 'quep'));
+		}, 1, "Accessor $method"];
+	}
+}
+
 1;
 __END__
 
@@ -185,6 +202,13 @@ all tests succeed but your test program still throws an error.
 Default value Tk::MainWindow.
 You can set it to a derived class.
 
+=item B<$quitdelays>
+
+Default value 200.
+This is the delay set between the termination of tests and the desctruction of the main widow.
+If your desktop goes bonkers while testing, you main want to increase this value. 
+But I think you're good.
+
 =item B<@tests>
 
 Each element of B<@tests > should contain a list of three elements.
@@ -219,16 +243,26 @@ Places the object in B>$app>.
 
 =item B<hashcompare>I<(\%hash1, \%hash2)>
 
-Depricated 'hashcompare', use Test::Deep
+Depricated, use Test::Deep or Data::Compare.
 
 =item B<listcompare>I<(\@list1, \@list2)>
 
-Depricated 'hashcompare', use Test::Deep
+Depricated, use Test::Deep or Data::Compare.
 
 =item B<starttesting>
 
 Launches the main loop and sets a timer with delay B<$delay> to start
 the internal test routine.
+
+=item B<testaccessors>I<($obj, 'method1, 'method2', ...)>
+
+Quickly set up accessor tests. Just to be clear, an accessor is something like this.
+
+ sub Value {
+    my $self = shift;
+    $self->{VALUE} = shift if @_;
+    return $self->{VALUE}
+ }
 
 =back
 
