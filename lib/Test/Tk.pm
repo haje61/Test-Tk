@@ -3,7 +3,7 @@ package Test::Tk;
 
 use strict;
 use warnings;
-our $VERSION = '3.01';
+our $VERSION = '3.02';
 
 use Config;
 use Test::More;
@@ -15,6 +15,7 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw(
 	$app
 	$delay
+	$quitdelay
 	$mwclass
 	@tests
 	$show
@@ -29,6 +30,7 @@ our $mwclass = 'Tk::MainWindow';
 our @tests = ();
 our $show = 0;
 our $delay = 100;
+our $quitdelay = 200;
 
 my $arg = shift @ARGV;
 $show = 1 if (defined($arg) and ($arg eq 'show'));
@@ -52,13 +54,9 @@ sub dotests {
 		for (@tests) {
 			my ($call, $expected, $comment) = @$_;
 			my $result = &$call;
-			if (ref $expected =~ /^SCALAR/) {
-				ok(($expected eq $result), $comment)
-			} else {
-				cmp_deeply($expected, $result, $comment); 
-			}
+			cmp_deeply($result, $expected, $comment); 
 		}
-		$app->after(5, sub { $app->destroy }) unless $show
+		$app->after($quitdelay, sub { $app->destroy }) unless $show
 	}
 }
 
@@ -195,7 +193,8 @@ Each element of B<@tests > should contain a list of three elements.
 
 =item B<A reference to a sub>
 
-The sub should return the expected value for the test to succeed.
+The sub should return the expected value for the test to succeed. It should
+always return something in scalar context.
 
 =item B<Expected value>
 

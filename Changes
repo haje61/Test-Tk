@@ -30,3 +30,9 @@ Revision history for Perl extension Test::Tk.
 
 3.01  Fri Jun 30 2023
 	- Added Test::Deep to prerequisites.
+
+3.02 Sat Aug 19 2023
+	- Switched result and expected in cmp_deeplu to reflect fails better
+	- Updated documentation
+	- Added $quitdelay as new export. Prevents crashing my desktop environment when
+	  many windows are flipping in and out of existence.
